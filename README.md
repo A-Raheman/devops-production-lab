@@ -23,3 +23,14 @@ This repo demonstrates a production-style local setup using Docker Compose:
 ### 1) Start
 ```bash
 bash scripts/run.sh
+
+## CI/CD (Jenkins)
+This repo includes a 'JenkinsFile' that:
+- Builds a Docker image
+- Pushes a traceable tag: 'build-${BUILD_NUMBER}'
+- Updates 'latest'
+- Uses Jenkins Credentials ('dockerhub-cred') for Docker Hub authentication
+
+See: 'docs/ci-cd.md'
+Docker Hub: 'araheman/devops-prodcution-lab'
+

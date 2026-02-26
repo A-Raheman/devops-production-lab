@@ -1,0 +1,16 @@
+# Secrets / local configs
+.env
+*.pem
+*.key
+*.crt
+
+# Docker local auth (NEVER commit)
+**/.docker/config.json
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.logs

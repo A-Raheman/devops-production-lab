@@ -34,3 +34,19 @@ This repo includes a 'JenkinsFile' that:
 See: 'docs/ci-cd.md'
 Docker Hub: 'araheman/devops-prodcution-lab'
 
+---
+
+## Related CI/CD Showcase Repository 
+
+This production lab is supported by a dedicated CI/CD implementation:
+
+--> https://github.com/A-Raheman/jenkins-cicd-lab
+
+That repository demonstrates:
+
+- Jenkins Multibranch Pipeline
+- GitHub Webhook Integration (Cloudflare Tunnel)
+- Docker image build & push
+- Parameterized builds
+- Build retention strategy
+- Production-style tagging

@@ -31,13 +31,20 @@ pipeline {
     stage('Build Image') {
       steps {
         sh 'ls -la'
-        sh "docker build \
-	      --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
-	      --build-arg GIT_COMMIT=${GIT_COMMIT} \
-	      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-	      -t ${LOCAL_IMAGE}:${IMAGE_TAG}" .
-      }
-    }
+
+         script {
+           def BUILD_DATE = sh(script: "date -u --iso-8601=seconds", returnStdout: true).trim()
+
+           sh """
+            docker build \
+            --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} \
+            --build-arg GIT_COMMIT=${env.GIT_COMMIT} \
+            --build-arg BUILD_DATE=${BUILD_DATE} \
+            -t ${LOCAL_IMAGE}:${IMAGE_TAG} .
+           """
+         }
+       }
+    }    
 
     stage('Login & Push') {
       steps {

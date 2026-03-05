@@ -59,25 +59,28 @@ pipeline {
     
     stage('Deploy to EC2') {
       steps {
-	// Use an SSH private key stored as a Jenkins credential (recommneded)
-	sshagent(credentials: ['ec2-ssh-key']) {
-	sh """
-	  ssh -o StrictHostKeyChecking=no ubuntu@3.111.34.40 '
-	    set -e
+	withCredentials([sshUserPrivateKey(
+	  credentialsId: 'ec2-ssh-key',
+	  keyFileVariable: 'SSH_KEY',
+	  usernameVariable: 'SSH_USER'
+        )]) {
+	  sh """
+	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@3.110.207.197 '
+	      set -e
 
-	    echo "Pulling  latest image..."
-	    docker pull ${DOCKERHUB_REPO}:latest
+	      echo "Pulling  latest image..."
+	      docker pull araheman/devops-production-lab:latest
 
-	    echo "Stopping old container (if any)..."
-	    docker rm -f prodlab || true
+	      echo "Stopping old container (if any)..."
+	      docker rm -f prodlab || true
 
-	    echo "Starting new container..."
-	    docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:latest
+	      echo "Starting new container..."
+	      docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:latest
 
-	    echo "Deployment complete. Running containers:"
-	    docker ps --format "table {{.Names}}\\t{.Image}}\\t{{.Status}}\\t{{.Ports}}"
-	  '
-	 """
+	      echo "Deployment complete. Running containers:"
+	      docker ps --format "table {{.Names}}\\t{.Image}}\\t{{.Status}}\\t{{.Ports}}"
+	    '
+	  """
 	}
       }
     }

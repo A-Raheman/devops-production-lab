@@ -60,7 +60,7 @@ pipeline {
     stage('Deploy to EC2') {
       steps {
 	// Use an SSH private key stored as a Jenkins credential (recommneded)
-	sshagent(credentials: ['ec2-ssh-key'] {
+	sshagent(credentials: ['ec2-ssh-key']) {
 	sh """
 	  ssh -o StrictHostKeyChecking=no ubuntu@3.111.34.40 '
 	    set -e

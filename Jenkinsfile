@@ -31,7 +31,11 @@ pipeline {
     stage('Build Image') {
       steps {
         sh 'ls -la'
-        sh "docker build -t ${LOCAL_IMAGE}:${IMAGE_TAG} ."
+        sh "docker build \
+	      --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
+	      --build-arg GIT_COMMIT=${GIT_COMMIT} \
+	      --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%SZ)" \
+	      -t ${LOCAL_IMAGE}:${IMAGE_TAG}" .
       }
     }
 

@@ -34,7 +34,7 @@ pipeline {
         sh "docker build \
 	      --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
 	      --build-arg GIT_COMMIT=${GIT_COMMIT} \
-	      --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%SZ)" \
+	      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
 	      -t ${LOCAL_IMAGE}:${IMAGE_TAG}" .
       }
     }

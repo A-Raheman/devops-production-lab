@@ -49,12 +49,16 @@ GitHub --> Jenkins --> Docker Build --> DockerHub --> SSH --> EC2 --> Docker Con
 ---
 
 ## Deployment Verification
-#Example:
+Example:
+
 Visit: http://EC2_PUBLIC_IP/version.html
 
 Example output:
+
 Build: 24
+
 Commit: 5ff2ea0f6a3650366709aef43d13493826cffae2
+
 Built at: 2026-03-05T10:42:17+00:00
 
 This proves the deployment pipeline executed successfully.

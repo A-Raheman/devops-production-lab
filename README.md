@@ -1,52 +1,93 @@
-# DevOps Production Lab (Docker Compose + NGINX Reverse Proxy)
+# DevOps CI/CD Production Deployment Pipeline Project
 
-This repo demonstrates a production-style local setup using Docker Compose:
-- Reverse proxy using NGINX
-- Service discovery inside Docker network
-- Scaling app replicas
-- Load balancing verification via repeated curl requests
+## Project Overview
+This project demonstrates a complete CI/CD pipeline using Jenkins, Docker, DockerHub, and AWS EC2.
 
-## Tech
-- Linux / Bash
-- Git
-- Docker, Docker Compose
-- NGINX reverse proxy
+The pipeline automatically buils a Docker image, pushes it to DockerHub, and deploys it to an EC2 server.
 
-## Project Structure
-- `compose/` -> compose file + nginx config
-- `scripts/` -> run / verify / cleanup
-- `screenshots/` -> proof
-- `docs/` -> notes / architecture
-
-## Quick Start
-
-### 1) Start
-```bash
-bash scripts/run.sh
-
-## CI/CD (Jenkins)
-This repo includes a 'JenkinsFile' that:
-- Builds a Docker image
-- Pushes a traceable tag: 'build-${BUILD_NUMBER}'
-- Updates 'latest'
-- Uses Jenkins Credentials ('dockerhub-cred') for Docker Hub authentication
-
-See: 'docs/ci-cd.md'
-Docker Hub: 'araheman/devops-prodcution-lab'
+A deployment metadata page ('/Version.html') proves that the deployment was successful by displaying the build number, commit hash, and build timestamp.
 
 ---
 
-## Related CI/CD Showcase Repository 
+Related projects in this portfolio:
 
-This production lab is supported by a dedicated CI/CD implementation:
+- docker-mini-project --> Docker Compose + NGINX Reverse Proxy
+- jenkins-cicd-lab --> Jenkins CI/CD experiments
 
---> https://github.com/A-Raheman/jenkins-cicd-lab
+---
 
-That repository demonstrates:
+## Architecture
 
-- Jenkins Multibranch Pipeline
-- GitHub Webhook Integration (Cloudflare Tunnel)
-- Docker image build & push
-- Parameterized builds
-- Build retention strategy
-- Production-style tagging
+GitHub --> Jenkins --> Docker Build --> DockerHub --> SSH --> EC2 --> Docker Container --> Nginx Website
+
+---
+
+## Tools Used
+
+- Jenkins
+- Docker
+- DockerHub
+- AWS EC2
+- Nginx 
+- GitHub
+- Linux / WSL
+
+---
+
+## CI/CD Pipeline FLow
+
+1. Developer pushes code to GitHub
+2. Jenkins detects changes using Poll SCm
+3. Jenkins builds Docker image
+4. Image is tagged with build number
+5. Image is pushed to DockerHub
+6. Jenkins SSH connects to EC2
+7. EC2 pulls latest image
+8. Existing container is replaced
+9. Website updates automatically
+
+---
+
+## Deployment Verification
+#Example:
+Visit: http://EC2_PUBLIC_IP/version.html
+
+Example output:
+Build: 24
+Commit: 5ff2ea0f6a3650366709aef43d13493826cffae2
+Built at: 2026-03-05T10:42:17+00:00
+
+This proves the deployment pipeline executed successfully.
+
+---
+
+## Repository Structure
+
+devops-production-lab
+├ Dockerfile
+├ Jenkinsfile
+├ site/
+│ ├ index.html
+│ └ version.html
+└ README.md
+
+---
+
+## Key Learning Outcomes
+
+- Jenkins Pipeline configuration
+- Docker image build automation
+- Secure credential handling in Jenkins
+- Automated deployment to EC2 via SSH
+- Deployment verification using build metadata
+- Poll SCM triggers for CI/CD
+
+---
+
+## Future Improvements
+
+- Zero-downtime deployment
+- Reverse proxy with Nginx
+- HTTPS with Let's Encrypt
+- Monitoring and logging
+

@@ -80,17 +80,40 @@ pipeline {
 	      set -e
 
 	      echo "Pulling  latest image..."
-	      docker pull araheman/devops-production-lab:latest
+	      docker pull ${DOCKERHUB_REPO}:latest
+	      
+	      echo "Removing old candidate container if present..."
+	      docker rm -f prodlab_candidate || true
 
-	      echo "Stopping old container (if any)..."
-	      docker rm -f prodlab || true
+	      echo "Starting candidate container on port 8081..."
+	      docker run -d --name prodlab_candidate -p 8081:80 ${DOCKERHUB_REPO}:latest
 
-	      echo "Starting new container..."
-	      docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:latest
+	      echo "Waiting for candidate to come up..."
+	      sleep 5
 
-	      echo "Deployment complete. Running containers:"
-	      docker ps --format "table {{.Names}}\\t{.Image}}\\t{{.Status}}\\t{{.Ports}}"
+	      echo "Running health check on candidate..."
+	      if curl -fsS http://localhost:8081/version.html >/dev/null; then
+		echo "Candidate is healthy. Replacing production container..."
+
+		docker rm -f prodlab || true
+
+		docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:latest
+
+		echo "Cleaning up candidate container..."
+		docker rm -f prodlab_candidate || true
+		
+		echo "Deployment complete. Running container:"
+		docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"
+	      
+	      else
+		echo "Health check failed. Keeping old production container unchanged."
+		docker logs prodlab_candidate || true
+		docker rm -f prodlab_candidate || true
+		exit 1
+	      fi
+	  
 	    '
+
 	  """
 	}
       }

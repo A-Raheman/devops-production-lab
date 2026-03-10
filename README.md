@@ -109,3 +109,23 @@ Flow:
 5. If unhealthy -> abort deployment 
 
 This prevents broken releases from immediately affecting production.
+
+---
+
+## Load Balancing and Resilience Test
+
+This project was extended with a NGINX load balancer in front of two backend containers:
+
+- app-blue -> port 8081
+- app-green -> port 8082
+
+NGINX distributed traffic between both backends using round-robin.
+
+### Failure simulation 
+One backend container was intentionally stopped.
+
+Result:
+- The website remained available
+- All requests were served by the remaining healthy backend
+
+This demonstrated basic services resilience and load balancing behaviour.

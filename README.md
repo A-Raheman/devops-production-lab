@@ -95,3 +95,17 @@ devops-production-lab
 - HTTPS with Let's Encrypt
 - Monitoring and logging
 
+---
+
+## Deployment Safety Gate
+
+The Jenkins pipeline deploys a candidate container on port 8081 and performs a health check before replacing the production container.
+
+Flow: 
+1. Pull latest Docker image
+2. Start candidate container (8081)
+3. Health check `/version.html`
+4. If healthy -> replace production container
+5. If unhealthy -> abort deployment 
+
+This prevents broken releases from immediately affecting production.

@@ -76,7 +76,7 @@ pipeline {
 	  usernameVariable: 'SSH_USER'
         )]) {
 	  sh """
-	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@3.110.207.197 '
+	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@13.126.246.37 '
 	      set -e
 
 	      echo "Pulling  latest image..."

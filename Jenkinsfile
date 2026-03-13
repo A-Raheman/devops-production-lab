@@ -70,8 +70,9 @@ pipeline {
     
     stage('Deploy to EC2') {
       steps {
-	scripts {
-	 def PREV_TAG = "build-${env.BUILD_NUMBER.toInteger() - 1}"
+	script {
+	 env.PREV_TAG = "build-${env.BUILD_NUMBER.toInteger() - 1}"
+	}
 
 	withCredentials([sshUserPrivateKey(
 	  credentialsId: 'ec2-ssh-key',
@@ -83,7 +84,7 @@ pipeline {
 	      set -e
 		     
 	      echo "Deploying current version: ${IMAGE_TAG}"
-	      echo "Rollback version if needed: ${PREV_TAG}"
+	      echo "Rollback version if needed: ${env.PREV_TAG}"
 
 	      echo "Pulling current image..."
 	      docker pull ${DOCKERHUB_REPO}:${IMAGE_TAG}
@@ -112,15 +113,15 @@ pipeline {
 		docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"
 	      
 	      else
-		echo "Health check failed. Rolling back to previous version: ${PREV_TAG}"
+		echo "Health check failed. Rolling back to previous version: ${env.PREV_TAG}"
 		docker logs prodlab_candidate || true
 		docker rm -f prodlab_candidate || true
 
-		docker pull ${DOCKERHUB_REPO}:${PREV_TAG} || true
+		docker pull ${DOCKERHUB_REPO}:${env.PREV_TAG} || true
 		docker rm -f prodlab || true
-		docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:${PREV_TAG}
+		docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:${env.PREV_TAG}
 
-		echo "Rollback complete. Production restored to ${PREV_TAG}"
+		echo "Rollback complete. Production restored to ${env.PREV_TAG}"
 		docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"
 
 		exit 1

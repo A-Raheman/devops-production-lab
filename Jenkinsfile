@@ -70,23 +70,29 @@ pipeline {
     
     stage('Deploy to EC2') {
       steps {
+	scripts {
+	 def PREV_TAG = "build-${env.BUILD_NUMBER.toInteger() - 1}"
+
 	withCredentials([sshUserPrivateKey(
 	  credentialsId: 'ec2-ssh-key',
 	  keyFileVariable: 'SSH_KEY',
 	  usernameVariable: 'SSH_USER'
         )]) {
 	  sh """
-	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@13.126.246.37 '
+	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@13.203.203.62 '
 	      set -e
+		     
+	      echo "Deploying current version: ${IMAGE_TAG}"
+	      echo "Rollback version if needed: ${PREV_TAG}"
 
-	      echo "Pulling  latest image..."
-	      docker pull ${DOCKERHUB_REPO}:latest
+	      echo "Pulling current image..."
+	      docker pull ${DOCKERHUB_REPO}:${IMAGE_TAG}
 	      
 	      echo "Removing old candidate container if present..."
 	      docker rm -f prodlab_candidate || true
 
 	      echo "Starting candidate container on port 8081..."
-	      docker run -d --name prodlab_candidate -p 8081:80 ${DOCKERHUB_REPO}:latest
+	      docker run -d --name prodlab_candidate -p 8081:80 ${DOCKERHUB_REPO}:${IMAGE_TAG}
 
 	      echo "Waiting for candidate to come up..."
 	      sleep 5
@@ -97,7 +103,7 @@ pipeline {
 
 		docker rm -f prodlab || true
 
-		docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:latest
+		docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:${IMAGE_TAG}
 
 		echo "Cleaning up candidate container..."
 		docker rm -f prodlab_candidate || true
@@ -106,9 +112,17 @@ pipeline {
 		docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"
 	      
 	      else
-		echo "Health check failed. Keeping old production container unchanged."
+		echo "Health check failed. Rolling back to previous version: ${PREV_TAG}"
 		docker logs prodlab_candidate || true
 		docker rm -f prodlab_candidate || true
+
+		docker pull ${DOCKERHUB_REPO}:${PREV_TAG} || true
+		docker rm -f prodlab || true
+		docker run -d --name prodlab --restart unless-stopped -p 80:80 ${DOCKERHUB_REPO}:${PREV_TAG}
+
+		echo "Rollback complete. Production restored to ${PREV_TAG}"
+		docker ps --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"
+
 		exit 1
 	      fi
 	  
@@ -116,6 +130,7 @@ pipeline {
 
 	  """
 	}
+       }
       }
     }
 

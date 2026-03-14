@@ -143,3 +143,32 @@ If the health check fails:
 
 This was tested by intentionally breaking the deployment and confirming automatic rollback to the previous version.
 
+---
+
+## Incident Simulation & Observability
+
+This project also includes a simulated production incident and debugging workflow.
+
+### Scenario 
+The NGINX load balancer container was running, but users were receiving the default "Welcome to Nginx" page instead of the application.
+
+### Investigation Steps
+1. Verified container state using `docker ps`
+2. Checked container resources usage with `docker stats`
+3. Inspected logs with `docker logs nginx-lb`
+4. Verified HTTP response using `curl`
+5. Entered the container to inspect the active nginx configuration
+
+### Root Cause
+The container was loading the default nginx configuration instead of the intended reverse proxy configuration.
+
+### Resolution
+- Replaced the configuration file with the correct upstream proxy configuration 
+- Recreated the load balancer container 
+- Verified traffic distribution across backend containers
+
+### Result 
+Traffic was successfully load balanced across:
+
+- BLUE backend container
+- GREEN backend container

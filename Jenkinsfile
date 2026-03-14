@@ -80,7 +80,7 @@ pipeline {
 	  usernameVariable: 'SSH_USER'
         )]) {
 	  sh """
-	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@13.203.203.62 '
+	    ssh -o StrictHostKeyChecking=no -i "\$SSH_KEY" "\$SSH_USER"@35.154.118.179 '
 	      set -e
 		     
 	      echo "Deploying current version: ${IMAGE_TAG}"
@@ -140,7 +140,6 @@ pipeline {
       steps {
         sh """
           docker logout || true
-
           # Remove local tags created during the build (ignore failures)
           docker rmi ${LOCAL_IMAGE}:${IMAGE_TAG} || true
           docker rmi ${DOCKERHUB_REPO}:${IMAGE_TAG} || true
@@ -152,7 +151,6 @@ pipeline {
       }
     }
   }
-
   post {
     success {
       echo "Pushed: ${DOCKERHUB_REPO}:${IMAGE_TAG} and :latest"

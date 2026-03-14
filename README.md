@@ -129,3 +129,17 @@ Result:
 - All requests were served by the remaining healthy backend
 
 This demonstrated basic services resilience and load balancing behaviour.
+
+---
+
+## Rollback Strategy
+
+The Jenkins pipeline deploys a candidate container and validates `/version.html`.
+
+If the health check fails:
+- candidate container is removed
+- previous working image tag is pulled 
+- production container is restored automatically 
+
+This was tested by intentionally breaking the deployment and confirming automatic rollback to the previous version.
+

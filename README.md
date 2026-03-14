@@ -1,11 +1,20 @@
 # DevOps CI/CD Production Deployment Pipeline Project
 
 ## Project Overview
-This project demonstrates a complete CI/CD pipeline using Jenkins, Docker, DockerHub, and AWS EC2.
+# DevOps Production Lab
 
-The pipeline automatically buils a Docker image, pushes it to DockerHub, and deploys it to an EC2 server.
+A hands-on DevOps project demonstrating a full CI/CD pipeline with:
 
-A deployment metadata page ('/Version.html') proves that the deployment was successful by displaying the build number, commit hash, and build timestamp.
+- Jenkins pipeline automation
+- Docker container build and registry push
+- AWS EC2 deployment
+- Blue-Green deployment strategy
+- Automatic rollback on failure
+- NGINX load balancing
+- Incident debugging and observability
+
+This project simulates a production deployment workflow used in real DevOps environments.
+
 
 ---
 
@@ -142,6 +151,21 @@ If the health check fails:
 - production container is restored automatically 
 
 This was tested by intentionally breaking the deployment and confirming automatic rollback to the previous version.
+
+---
+
+## Architecture
+
+Developer → GitHub → Jenkins Pipeline → Docker Image → DockerHub → EC2 Deployment
+
+Components used:
+
+- **Jenkins** – CI/CD automation
+- **Docker** – containerized application
+- **DockerHub** – image registry
+- **AWS EC2** – application host
+- **NGINX** – load balancer / reverse proxy
+- **Blue-Green containers** – zero downtime deployment
 
 ---
 
